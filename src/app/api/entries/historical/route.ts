@@ -11,7 +11,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Get today's date and normalize to start of day in local timezone
     const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
     const oneWeekAgo = new Date(today)
     oneWeekAgo.setDate(today.getDate() - 7)
     
