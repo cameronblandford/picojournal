@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PicoJournal
+
+A simple daily journaling Progressive Web App (PWA) where you write one sentence per day about your day.
+
+## Features
+
+- **Daily Journaling**: Write one sentence per day (280 character limit)
+- **Historical Lookback**: See entries from one week ago, one month ago, and one year ago
+- **Recent Entries**: Browse your past journal entries
+- **Authentication**: Secure sign up and login system
+- **PWA Support**: Install as an app on your device
+- **PostgreSQL Backend**: Reliable data storage
+- **Responsive Design**: Works great on mobile and desktop
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API routes, NextAuth.js
+- **Database**: PostgreSQL with Prisma ORM
+- **PWA**: next-pwa for service worker and manifest
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+
+- PostgreSQL database
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/cameronblandford/picojournal.git
+cd picojournal
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `.env` with your database URL and authentication secrets:
+```
+DATABASE_URL="postgresql://localhost:5432/picojournal"
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-## Learn More
+4. Set up the database:
+```bash
+npx prisma db push
+npx prisma generate
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Run the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Usage
 
-## Deploy on Vercel
+1. **Sign Up**: Create an account with email and password
+2. **Daily Entry**: Write one sentence about your day (up to 280 characters)
+3. **Historical View**: See what you wrote on this day in previous weeks, months, and years
+4. **Browse Entries**: Look through your recent journal entries
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## PWA Installation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+When visiting the app in a supported browser, you'll see an option to "Add to Home Screen" or "Install App". This allows you to use PicoJournal like a native app on your device.
+
+## Development
+
+```bash
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Run database migrations
+npx prisma migrate dev
+
+# View database
+npx prisma studio
+```
+
+## License
+
+MIT License - see LICENSE file for details.
