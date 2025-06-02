@@ -14,27 +14,24 @@ export async function GET(request: NextRequest) {
     // Debug logging
     console.log(`Historical API called for user: ${session.user.email} (${session.user.id})`)
 
-    // Get today's date as a string and create Date objects that match our storage format
+    // Use the exact same method that worked in our test scripts
     const today = new Date()
-    const todayStr = today.toISOString().split('T')[0] // YYYY-MM-DD format
-    
-    // Calculate date strings first
-    const oneWeekAgoDate = new Date(today)
-    oneWeekAgoDate.setDate(today.getDate() - 7)
-    const oneWeekAgoStr = oneWeekAgoDate.toISOString().split('T')[0]
-    
+    const oneWeekAgoStr = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
     const oneMonthAgoDate = new Date(today)
     oneMonthAgoDate.setMonth(today.getMonth() - 1)
     const oneMonthAgoStr = oneMonthAgoDate.toISOString().split('T')[0]
-    
     const oneYearAgoDate = new Date(today)
     oneYearAgoDate.setFullYear(today.getFullYear() - 1)
     const oneYearAgoStr = oneYearAgoDate.toISOString().split('T')[0]
-    
-    // Create Date objects in local timezone (which matches our storage)
-    const oneWeekAgo = new Date(oneWeekAgoStr + 'T00:00:00')
-    const oneMonthAgo = new Date(oneMonthAgoStr + 'T00:00:00')
-    const oneYearAgo = new Date(oneYearAgoStr + 'T00:00:00')
+
+    console.log(`Target dates: ${oneWeekAgoStr}, ${oneMonthAgoStr}, ${oneYearAgoStr}`)
+
+    // Use UTC dates to match our database storage format
+    const oneWeekAgo = new Date(oneWeekAgoStr + 'T00:00:00.000Z')
+    const oneMonthAgo = new Date(oneMonthAgoStr + 'T00:00:00.000Z')
+    const oneYearAgo = new Date(oneYearAgoStr + 'T00:00:00.000Z')
+
+    console.log(`Created date objects: ${oneWeekAgo.toISOString()}, ${oneMonthAgo.toISOString()}, ${oneYearAgo.toISOString()}`)
 
     const [weekEntry, monthEntry, yearEntry] = await Promise.all([
       prisma.entry.findUnique({
@@ -62,6 +59,8 @@ export async function GET(request: NextRequest) {
         }
       })
     ])
+
+    console.log(`Results: week=${!!weekEntry}, month=${!!monthEntry}, year=${!!yearEntry}`)
 
     return NextResponse.json({
       oneWeekAgo: weekEntry,
