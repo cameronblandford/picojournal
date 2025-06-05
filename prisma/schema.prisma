@@ -68,4 +68,6 @@ model Entry {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, date])
+  @@index([userId, date])
+  @@index([userId, createdAt])
 }

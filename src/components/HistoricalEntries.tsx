@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { memo } from "react"
+import { useHistoricalEntries } from "@/hooks/useEntries"
 
 interface HistoricalEntry {
   id: string
@@ -15,30 +15,8 @@ interface HistoricalEntriesData {
   oneYearAgo: HistoricalEntry | null
 }
 
-export default function HistoricalEntries() {
-  const [historicalEntries, setHistoricalEntries] = useState<HistoricalEntriesData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { data: session } = useSession()
-
-  useEffect(() => {
-    if (session) {
-      fetchHistoricalEntries()
-    }
-  }, [session])
-
-  const fetchHistoricalEntries = async () => {
-    try {
-      const response = await fetch("/api/entries/historical")
-      if (response.ok) {
-        const data = await response.json()
-        setHistoricalEntries(data)
-      }
-    } catch (error) {
-      console.error("Error fetching historical entries:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+const HistoricalEntries = memo(function HistoricalEntries() {
+  const { historicalEntries, loading } = useHistoricalEntries()
 
   if (loading) {
     return (
@@ -107,4 +85,6 @@ export default function HistoricalEntries() {
       )}
     </div>
   )
-}
+})
+
+export default HistoricalEntries

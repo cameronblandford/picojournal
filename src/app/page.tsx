@@ -2,16 +2,16 @@
 
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import JournalEntry from "@/components/JournalEntry"
 import HistoricalEntries from "@/components/HistoricalEntries"
 import RecentEntries from "@/components/RecentEntries"
+import { useTodayEntry } from "@/hooks/useEntries"
 
 export default function Home() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [todayEntry, setTodayEntry] = useState("")
-  const [loading, setLoading] = useState(true)
+  const { todayEntry, setTodayEntry, loading } = useTodayEntry()
 
   useEffect(() => {
     if (status === "loading") return
@@ -20,24 +20,7 @@ export default function Home() {
       router.push("/auth/signin")
       return
     }
-
-    fetchTodayEntry()
   }, [session, status, router])
-
-  const fetchTodayEntry = async () => {
-    try {
-      const today = new Date().toISOString().split('T')[0]
-      const response = await fetch(`/api/entries?date=${today}`)
-      if (response.ok) {
-        const data = await response.json()
-        setTodayEntry(data.entry?.content || "")
-      }
-    } catch (error) {
-      console.error("Error fetching today's entry:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleSaveEntry = (content: string) => {
     setTodayEntry(content)

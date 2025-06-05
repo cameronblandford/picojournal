@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo, useCallback } from "react"
 import { useSession } from "next-auth/react"
 
 interface JournalEntryProps {
@@ -9,7 +9,7 @@ interface JournalEntryProps {
   onSave?: (content: string) => void
 }
 
-export default function JournalEntry({ initialContent = "", date, onSave }: JournalEntryProps) {
+const JournalEntry = memo(function JournalEntry({ initialContent = "", date, onSave }: JournalEntryProps) {
   const [content, setContent] = useState(initialContent)
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
@@ -19,7 +19,7 @@ export default function JournalEntry({ initialContent = "", date, onSave }: Jour
     setContent(initialContent)
   }, [initialContent])
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!session || !content.trim()) return
 
     setIsSaving(true)
@@ -44,7 +44,7 @@ export default function JournalEntry({ initialContent = "", date, onSave }: Jour
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [session, content, date, onSave])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
@@ -94,4 +94,6 @@ export default function JournalEntry({ initialContent = "", date, onSave }: Jour
       </p>
     </div>
   )
-}
+})
+
+export default JournalEntry
