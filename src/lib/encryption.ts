@@ -7,6 +7,18 @@ export function encrypt(text: string): string {
 }
 
 export function decrypt(encryptedData: string): string {
-  const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY)
-  return bytes.toString(CryptoJS.enc.Utf8)
+  try {
+    const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY)
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8)
+    
+    // If decryption fails or returns empty, assume it's already plaintext
+    if (!decrypted) {
+      return encryptedData
+    }
+    
+    return decrypted
+  } catch (error) {
+    // If decryption fails, assume it's already plaintext (existing data)
+    return encryptedData
+  }
 }
