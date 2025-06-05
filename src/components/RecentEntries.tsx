@@ -1,39 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { memo } from "react"
+import { useEntries } from "@/hooks/useEntries"
 
-interface Entry {
-  id: string
-  content: string
-  date: string
-  createdAt: string
-}
-
-export default function RecentEntries() {
-  const [entries, setEntries] = useState<Entry[]>([])
-  const [loading, setLoading] = useState(true)
-  const { data: session } = useSession()
-
-  useEffect(() => {
-    if (session) {
-      fetchEntries()
-    }
-  }, [session])
-
-  const fetchEntries = async () => {
-    try {
-      const response = await fetch("/api/entries")
-      if (response.ok) {
-        const data = await response.json()
-        setEntries(data.entries || [])
-      }
-    } catch (error) {
-      console.error("Error fetching entries:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+const RecentEntries = memo(function RecentEntries() {
+  const { entries, loading } = useEntries()
 
   if (loading) {
     return (
@@ -83,4 +54,6 @@ export default function RecentEntries() {
       </div>
     </div>
   )
-}
+})
+
+export default RecentEntries

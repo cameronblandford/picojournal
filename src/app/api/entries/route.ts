@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { encrypt, decrypt } from "@/lib/encryption"
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +24,17 @@ export async function GET(request: NextRequest) {
           }
         }
       })
-      return NextResponse.json({ entry })
+      
+      const decryptedEntry = entry ? {
+        ...entry,
+        content: decrypt(entry.content)
+      } : null
+      
+      return NextResponse.json({ entry: decryptedEntry }, {
+        headers: {
+          'Cache-Control': 'private, max-age=300'
+        }
+      })
     }
 
     const entries = await prisma.entry.findMany({
@@ -32,7 +43,16 @@ export async function GET(request: NextRequest) {
       take: 50
     })
 
-    return NextResponse.json({ entries })
+    const decryptedEntries = entries.map(entry => ({
+      ...entry,
+      content: decrypt(entry.content)
+    }))
+
+    return NextResponse.json({ entries: decryptedEntries }, {
+      headers: {
+        'Cache-Control': 'private, max-age=300'
+      }
+    })
   } catch (error) {
     console.error("Error fetching entries:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
@@ -56,6 +76,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const encryptedContent = encrypt(content)
+    
     const entry = await prisma.entry.upsert({
       where: {
         userId_date: {
@@ -64,16 +86,21 @@ export async function POST(request: NextRequest) {
         }
       },
       update: {
-        content
+        content: encryptedContent
       },
       create: {
         userId: session.user.id,
-        content,
+        content: encryptedContent,
         date: new Date(date)
       }
     })
 
-    return NextResponse.json({ entry }, { status: 201 })
+    const decryptedEntry = {
+      ...entry,
+      content: decrypt(entry.content)
+    }
+
+    return NextResponse.json({ entry: decryptedEntry }, { status: 201 })
   } catch (error) {
     console.error("Error creating/updating entry:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

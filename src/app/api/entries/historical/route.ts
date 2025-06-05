@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { decrypt } from "@/lib/encryption"
 
 export async function GET(request: NextRequest) {
   try {
@@ -63,9 +64,13 @@ export async function GET(request: NextRequest) {
     console.log(`Results: week=${!!weekEntry}, month=${!!monthEntry}, year=${!!yearEntry}`)
 
     return NextResponse.json({
-      oneWeekAgo: weekEntry,
-      oneMonthAgo: monthEntry,
-      oneYearAgo: yearEntry
+      oneWeekAgo: weekEntry ? { ...weekEntry, content: decrypt(weekEntry.content) } : null,
+      oneMonthAgo: monthEntry ? { ...monthEntry, content: decrypt(monthEntry.content) } : null,
+      oneYearAgo: yearEntry ? { ...yearEntry, content: decrypt(yearEntry.content) } : null
+    }, {
+      headers: {
+        'Cache-Control': 'private, max-age=3600'
+      }
     })
   } catch (error) {
     console.error("Error fetching historical entries:", error)
