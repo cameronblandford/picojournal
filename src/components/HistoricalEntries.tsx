@@ -3,17 +3,7 @@
 import { memo } from "react"
 import { useHistoricalEntries } from "@/hooks/useEntries"
 
-interface HistoricalEntry {
-  id: string
-  content: string
-  date: string
-}
 
-interface HistoricalEntriesData {
-  oneWeekAgo: HistoricalEntry | null
-  oneMonthAgo: HistoricalEntry | null
-  oneYearAgo: HistoricalEntry | null
-}
 
 const HistoricalEntries = memo(function HistoricalEntries() {
   const { historicalEntries, loading } = useHistoricalEntries()
