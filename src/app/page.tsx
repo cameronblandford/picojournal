@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import JournalEntry from "@/components/JournalEntry"
 import HistoricalEntries from "@/components/HistoricalEntries"
 import RecentEntries from "@/components/RecentEntries"
+import AliveButton from "@/components/AliveButton"
 import { useTodayEntry } from "@/hooks/useEntries"
 
 export default function Home() {
@@ -79,6 +80,17 @@ export default function Home() {
                 date={today}
                 onSave={handleSaveEntry}
               />
+              
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">or simply</span>
+                </div>
+              </div>
+              
+              <AliveButton date={today} />
             </div>
 
             <div className="bg-white rounded-lg shadow-sm p-6">

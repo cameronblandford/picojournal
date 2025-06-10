@@ -47,6 +47,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   entries       Entry[]
+  aliveChecks   AliveCheck[]
   createdAt     DateTime  @default(now())
 }
 
@@ -70,4 +71,15 @@ model Entry {
   @@unique([userId, date])
   @@index([userId, date])
   @@index([userId, createdAt])
+}
+
+model AliveCheck {
+  id        String   @id @default(cuid())
+  date      DateTime @default(now()) @db.Date
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([userId, date])
 }
