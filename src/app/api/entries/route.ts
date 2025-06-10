@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { encrypt, decrypt } from "@/lib/encryption"
 
-// force update
+// force update 2
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
