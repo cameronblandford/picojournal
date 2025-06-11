@@ -14,13 +14,18 @@ export default function AliveButton({ date }: AliveButtonProps) {
   const { data: session } = useSession()
 
   useEffect(() => {
-    if (!session) return
+    if (!session) {
+      setIsLoading(false)
+      return
+    }
 
+    setIsLoading(true)
     const fetchAliveStatus = async () => {
       try {
         const response = await fetch(`/api/alive?date=${date}`)
         if (response.ok) {
           const data = await response.json()
+          console.log("Alive status for date", date, ":", data.hasChecked)
           setHasChecked(data.hasChecked)
         }
       } catch (error) {

@@ -18,18 +18,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Date parameter is required" }, { status: 400 })
     }
 
+    // Ensure we're using UTC date
+    const checkDate = new Date(date + 'T00:00:00.000Z')
+    
     const aliveCheck = await prisma.aliveCheck.findUnique({
       where: {
         userId_date: {
           userId: session.user.id,
-          date: new Date(date)
+          date: checkDate
         }
       }
     })
     
+    console.log("Checking alive status for:", { 
+      userId: session.user.id, 
+      date, 
+      checkDate: checkDate.toISOString(),
+      found: !!aliveCheck 
+    })
+    
     return NextResponse.json({ hasChecked: !!aliveCheck }, {
       headers: {
-        'Cache-Control': 'private, max-age=300'
+        'Cache-Control': 'no-store'
       }
     })
   } catch (error) {
@@ -55,12 +65,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Ensure we're using UTC date
+    const checkDate = new Date(date + 'T00:00:00.000Z')
+    
     // Check if already exists
     const existing = await prisma.aliveCheck.findUnique({
       where: {
         userId_date: {
           userId: session.user.id,
-          date: new Date(date)
+          date: checkDate
         }
       }
     })
@@ -72,9 +85,11 @@ export async function POST(request: NextRequest) {
     const aliveCheck = await prisma.aliveCheck.create({
       data: {
         userId: session.user.id,
-        date: new Date(date)
+        date: checkDate
       }
     })
+
+    console.log("Created alive check:", { userId: session.user.id, date, id: aliveCheck.id })
 
     return NextResponse.json({ aliveCheck }, { status: 201 })
   } catch (error) {

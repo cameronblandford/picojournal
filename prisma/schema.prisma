@@ -48,6 +48,7 @@ model User {
   sessions      Session[]
   entries       Entry[]
   aliveChecks   AliveCheck[]
+  emotionalTodos EmotionalTodo[]
   createdAt     DateTime  @default(now())
 }
 
@@ -82,4 +83,19 @@ model AliveCheck {
 
   @@unique([userId, date])
   @@index([userId, date])
+}
+
+model EmotionalTodo {
+  id        String   @id @default(cuid())
+  task      String
+  benefit   String
+  blocker   String
+  completed Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, completed])
+  @@index([userId, createdAt])
 }
